@@ -1,0 +1,36 @@
+# Go
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go work
+go.work.sum
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+out/
+
+# IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Coverage/Reports
+coverage/
+.coverage
+
+

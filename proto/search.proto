@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package polyscale.search.v1;
+
+option go_package = "polyscale/proto/searchpb";
+
+message Document {
+  string id = 1;
+  string repo = 2;
+  string path = 3;
+  string language = 4;
+  string content = 5;
+}
+
+message IndexRequest {
+  repeated Document documents = 1;
+}
+
+message IndexResponse {
+  uint32 indexed = 1;
+}
+
+message SearchRequest {
+  string query = 1;
+  uint32 limit = 2;
+}
+
+message SearchResult {
+  string id = 1;
+  string repo = 2;
+  string path = 3;
+  string language = 4;
+  string snippet = 5;
+  double score = 6;
+}
+
+message SearchResponse {
+  repeated SearchResult results = 1;
+}
+
+service SearchService {
+  rpc Index(IndexRequest) returns (IndexResponse);
+  rpc Search(SearchRequest) returns (SearchResponse);
+}
+
+

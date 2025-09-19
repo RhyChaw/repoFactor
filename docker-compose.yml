@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  searchd:
+    build:
+      context: ./services/searchd
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+  gateway:
+    build:
+      context: ./services/gateway
+      dockerfile: Dockerfile
+    environment:
+      - SEARCHD_URL=http://searchd:8090
+    ports:
+      - "8080:8080"
+    depends_on:
+      - searchd
+  ml:
+    build:
+      context: ./ml/service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_PUBLIC_GATEWAY_URL=http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gateway
+
+

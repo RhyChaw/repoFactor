@@ -1,0 +1,9 @@
+go 1.21
+
+use (
+	./services/gateway
+	./services/searchd
+	./services/indexer
+)
+
+

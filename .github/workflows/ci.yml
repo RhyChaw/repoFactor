@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Build gateway
+        run: |
+          cd services/gateway && go build ./...
+      - name: Build searchd
+        run: |
+          cd services/searchd && go build ./...
+      - name: Build indexer
+        run: |
+          cd services/indexer && go build ./...
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          cd ml/service && python -m pip install --upgrade pip && pip install -r requirements.txt
+      - name: Lint (flake8 placeholder)
+        run: |
+          python - <<'PY'
+          print('lint-ok')
+          PY
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install and build
+        run: |
+          cd web && npm i && npm run build
+
+
