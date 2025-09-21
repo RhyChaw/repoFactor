@@ -4,6 +4,7 @@ use (
 	./services/gateway
 	./services/searchd
 	./services/indexer
+	./cmd/devserver
 )
 
 
