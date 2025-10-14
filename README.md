@@ -40,6 +40,8 @@ Build and run all services:
 
 Open the web UI: http://localhost:3000
 
+Note: `docker-compose.yml` sets `SEARCHD_SEED_DEMO=1`, so `searchd` will start with a demo document. You can immediately search for `json` in the UI.
+
 Seed sample docs:
 
 curl -X POST http://localhost:8090/index -H 'Content-Type: application/json' \
