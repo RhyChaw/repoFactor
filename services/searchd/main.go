@@ -2,6 +2,7 @@ package main
 
 import (
     "encoding/json"
+    "fmt"
     "log"
     "net/http"
     "os"
@@ -121,6 +122,44 @@ func main() {
         addr = v
     }
     idx := newIndex()
+
+    // Optional autoseed via environment variable SEARCHD_SEED_JSON
+    // Expected value is a JSON array of documents or a single document JSON.
+    if seed := os.Getenv("SEARCHD_SEED_JSON"); seed != "" {
+        type docOrDocs struct {
+            Documents []Document `json:"documents"`
+        }
+        var wrapper docOrDocs
+        // Accept either direct {documents:[...]} or a bare array/object
+        // Try {documents:[...]}
+        if err := json.Unmarshal([]byte(seed), &wrapper); err == nil && len(wrapper.Documents) > 0 {
+            idx.addDocuments(wrapper.Documents)
+            log.Printf("autoseeded %d documents from SEARCHD_SEED_JSON wrapper", len(wrapper.Documents))
+        } else {
+            // Try array of docs
+            var docs []Document
+            if err := json.Unmarshal([]byte(seed), &docs); err == nil && len(docs) > 0 {
+                idx.addDocuments(docs)
+                log.Printf("autoseeded %d documents from SEARCHD_SEED_JSON array", len(docs))
+            } else {
+                // Try single doc
+                var d Document
+                if err := json.Unmarshal([]byte(seed), &d); err == nil && d.ID != "" {
+                    idx.addDocuments([]Document{d})
+                    log.Printf("autoseeded 1 document from SEARCHD_SEED_JSON object (id=%s)", d.ID)
+                } else {
+                    log.Printf("failed to parse SEARCHD_SEED_JSON: %v", err)
+                }
+            }
+        }
+    } else {
+        // Default demo seed if enabled via SEARCHD_SEED_DEMO=1
+        if os.Getenv("SEARCHD_SEED_DEMO") == "1" {
+            demo := Document{ID: "1", Repo: "demo/repo", Path: "main.py", Language: "python", Content: "import json\njson.loads(\"{}\")"}
+            idx.addDocuments([]Document{demo})
+            log.Printf("autoseeded demo document (id=%s)", demo.ID)
+        }
+    }
 
     mux := http.NewServeMux()
     mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
