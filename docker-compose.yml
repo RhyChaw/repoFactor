@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8090:8090"
+    environment:
+      - SEARCHD_SEED_DEMO=1
   gateway:
     build:
       context: ./services/gateway
